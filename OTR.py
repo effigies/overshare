@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-import os
 from hashlib import sha1
-from struct import pack, unpack
 from base64 import b64encode, b64decode
 from spec import SHORT, INT, MPI
-from sexpParser import sexp, sexptodict
+
 
 class PublicKey:
     """Generic public key class
@@ -98,41 +96,4 @@ class PrivateDSA(PublicDSA):
         return cls(expr[0]['p'], expr[1]['q'], expr[2]['g'], expr[3]['y'],
                    expr[4]['x'])
 
-
-class Account:
-    def __init__(self, name, protocol, private_key):
-        self.name = name
-        self.protocol = protocol
-        self.private_key = private_key
-
-
-    def __repr__(self):
-        return '<{} {} {}>'.format(self.__class__.__name__,
-                                   self.name, self.private_key.fingerprint)
-
-    @classmethod
-    def fromSExpression(cls, expr):
-        name = expr[0]['name']
-        protocol = expr[1]['protocol']
-        private_key = PrivateDSA.fromSExpression(expr[2]['private-key']['dsa'])
-        return cls(name, protocol, private_key)
-
-
-class PrivKeys:
-    def __init__(self, accounts):
-        self.accounts = accounts
-
-    @classmethod
-    def fromSExpression(cls, expr):
-        accounts = [Account.fromSExpression(sub['account'])
-                    for sub in expr['privkeys']]
-        return cls(accounts)
-
-private_key_file = os.path.join(os.environ['HOME'], '.purple',
-                                'otr.private_key')
-
-private_key_data = sexp.parseFile(private_key_file)
-
 KEYCODES = {SHORT(0x0000): PublicDSA}
-
-private_keys = PrivKeys.fromSExpression(sexptodict(private_key_data))
