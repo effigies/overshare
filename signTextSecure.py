@@ -36,9 +36,15 @@ def getQR(fingerprint):
 
 
 def main(cmd, fingerprint):
+    try:
+        bytestring = int(fingerprint, 16).to_bytes(33, 'big')
+        fingerprint = base64.b64encode(bytestring).decode()
+    except ValueError as e:
+        bytestring = base64.b64decode(fingerprint)
+
     lines = [getQR(fingerprint), '']
     front = 'Fingerprint: '
-    for six in splitsixes(base64.b64decode(fingerprint)):
+    for six in splitsixes(bytestring):
         lines.append(front + ' '.join('{:02x}'.format(x) for x in six))
         front = '             '
     lines.append('')
