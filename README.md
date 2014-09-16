@@ -60,59 +60,14 @@ beneath, for example:
     ASNFZ4mrze8CE0ZXipvO3wQVJjeMna6/CBkqO0xdbn//
 
 You may use either form of the key as the the argument to
-`signTextSecure.py`.
-
-An example follows:
-
-    $ signTextSecure.py ASNFZ4mrze8CE0ZXipvO3wQVJjeMna6/CBkqO0xdbn//
-    -----BEGIN PGP SIGNED MESSAGE-----                       
-    Hash: SHA512
-    
-                                         
-                                         
-        █▀▀▀▀▀█ ███ ▀▄ ▀▄ ▀█  █▀▀▀▀▀█    
-        █ ███ █ █▄▀█ ▀▄█▄██▄█ █ ███ █    
-        █ ▀▀▀ █ ▄  ▄▄██▄█▀▄▀  █ ▀▀▀ █    
-        ▀▀▀▀▀▀▀ ▀▄▀ █▄█▄▀▄█ █ ▀▀▀▀▀▀▀    
-        ▀█▄ ▀▀▀  ▄▄▀▄▄▄█ ██▄▀▄ ▀▄█▀▀▀    
-        ▄ ▀ ▀ ▀▄  ▄█▀▄▄▄▄▀▄▀▄▄█ ▄▄█▀▄    
-         ▄▀█▄▀▀▄█▄▀ ▀█▀▀ ██ ▄▀▀ █▄██▄    
-        ▀█▄  ▄▀ █   ▄▄▄█ ▀▄ ▀▀█▄  ▄██    
-        ▄ ▄██▀▀█▀▀▀▀▄▀█▀  ▀▄ ▀▄▄ ▄▀ █    
-          ▄▀▄▀▀▀ ▀▀█▀▄▄█ ██▀▀▀▄▀ ▀▄ ▄    
-        ▀▀▀▀ ▀▀ ▄█▄ ▀ ▀█▀▀▀██▀▀▀█ ▄█▀    
-        █▀▀▀▀▀█ ▄ ▀ ▄▄ ▄█▀█▄█ ▀ ██▄▀▀    
-        █ ███ █ ▀ █▀█ ▀▀██▀ ██▀███▀      
-        █ ▀▀▀ █ ▄▀██▄▄▀▄▀▀▄▀▄█▄▀▀█▄█▀    
-        ▀▀▀▀▀▀▀ ▀▀ ▀  ▀   ▀▀ ▀   ▀       
-                                         
-                                         
-    
-    Fingerprint: 01 23 45 67 89 ab
-                 cd ef 02 13 46 57
-                 8a 9b ce df 04 15
-                 26 37 8c 9d ae bf
-                 08 19 2a 3b 4c 5d
-                 6e 7f ff
-    
-    Base 64 encoded: ASNFZ4mrze8CE0ZXipvO3wQVJjeMna6/CBkqO0xdbn//
-    
-    -----BEGIN PGP SIGNATURE-----
-    Version: GnuPG v1
-    
-    iQEcBAEBCgAGBQJUF4hfAAoJEKbKRU2dUSnDSxcH/1/nTkcZreVuqt4ea4XcNXGN
-    RoKI8Oq5rXTg1CB5FYfVB1K+HRt2f1w69rCDtLJqkvCaw5csucUYN0CGJ+6C9R5W
-    nQMcX6AvLfMDO/VGNMzRjA4owZ9boD2/iMcJGkH3IBL1oN6VM60znOYqlpdIliL7
-    k2qNEhu0+PuZkGE5667+LZsGuoDnwtWMhDlXpoIv70yO2fRRbj6uqMrTxm989PkQ
-    Pvb3/cR0SGVvG6O0TvDHZQ9JAfXDgzlHFVukrpVHTCllk/CeuYHBEGWcU3KESGsX
-    Qh722rgyQw0lkqGnKzMprP1YuQjpZNHrJohqQ617wPwbUxgsIKam7MOD0Ao06zA=
-    =Yh36
-    -----END PGP SIGNATURE-----
-
-This block may be emailed or posted online. The block may be copied into the
-terminal following
+`signTextSecure.py`, which will produce a block that includes QR, hex and
+base-64 versions of the fingerprint. This block may be emailed or posted
+online. The block may be copied into the terminal following
 
     gpg --verify
 
 after which the user may scan the QR code to verify your identity in
 TextSecure.
+
+Note that, to display the QR code properly in a web browser, the `<pre>` or
+`<textarea>` tag will need to have the `line-height` property set to `1em`.
