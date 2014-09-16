@@ -12,7 +12,6 @@ class Account:
         self.protocol = protocol
         self.private_key = private_key
 
-
     def __repr__(self):
         return '<{} {} {}>'.format(self.__class__.__name__,
                                    self.name, self.private_key.fingerprint)
@@ -60,6 +59,7 @@ class FingerprintEntry:
             return '<Verified FPR {} {}>'.format(self.uid, self.fpr)
         else:
             return '<FPR {} {}>'.format(self.uid, self.fpr)
+
 
 class FingerprintTable(dict):
     fpr_file = os.path.join(os.environ['HOME'], '.purple',

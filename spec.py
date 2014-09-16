@@ -5,6 +5,7 @@ import math
 
 class UNSIGNED(int):
     maxbytes = None
+
     def __new__(cls, *args, **kwargs):
         x = super(UNSIGNED, cls).__new__(cls, *args, **kwargs)
         assert x >= 0

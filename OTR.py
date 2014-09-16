@@ -9,7 +9,7 @@ class PublicKey:
 
     Provides OTRv3 fingerprint functionality and ASCII-armored public key
     printing, and a fromBase64 method to decode ASCII public keys
-    
+
     Subclasses are responsible for defining a parameter sequence to be
     hashed for fingerprints"""
     @property

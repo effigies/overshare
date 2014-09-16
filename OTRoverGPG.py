@@ -8,6 +8,7 @@ import purple
 
 gpg = gnupg.GPG()
 
+
 def signKey(uid):
     keys = purple.PrivKeys.getPurpleKeys()
     for account in keys.accounts:
@@ -16,6 +17,7 @@ def signKey(uid):
         sig = gpg.sign(str(account.private_key))
         assert sig
         print(sig.data.decode())
+
 
 def verifyKey(uid):
     sig = Signature.fromstring(sys.stdin.read())
@@ -37,7 +39,6 @@ def verifyKey(uid):
             print("Fingerprint mismatch!")
     else:
         print("Could not find ID in fingerprint table.")
-
 
 
 def main(cmd, *argv):

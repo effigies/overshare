@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import gnupg
 
+
 class Signature:
     def __init__(self, message, signature, hashfun, version):
         self.message = message
