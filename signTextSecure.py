@@ -44,6 +44,7 @@ def main(cmd, fingerprint):
     lines.append('')
     lines.append('Base 64 encoded: ' + fingerprint)
     lines.append('')
+    lines.append('')
 
     sig = gpg.sign('\n'.join(lines))
     assert sig
