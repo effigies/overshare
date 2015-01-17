@@ -51,14 +51,15 @@ class PublicKey:
         """Determine keytype from first two bytes, and allow the subclass to
         interpret the key"""
 
-        bs = b64decode(string.encode())
-        classcode = KEYCODES[SHORT.from_bytes(bs[:2], 'big')]
-        if cls == PublicKey:
-            cls = classcode
-        else:
-            assert classcode == cls
+        # If subclasses do not implement their own fromBase64, we get
+        # recursion with no base
+        assert cls == PublicKey
 
-        return cls.fromBase64(string)
+        # Note that 4 base-64 characters = 3 bytes
+        bs = b64decode(string[:4].encode())
+        classcode = KEYCODES[SHORT.from_bytes(bs[:2], 'big')]
+
+        return classcode.fromBase64(string)
 
 
 class PublicDSA(PublicKey):
