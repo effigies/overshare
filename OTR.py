@@ -133,23 +133,17 @@ class PublicDSA(PublicKey):
         keycode = SHORT.from_bytes(bs[:2], 'big')
         assert keycode == cls.keytype
 
-        bs = bs[2:]
-        plen = INT.from_bytes(bs[:4], 'big')
-        p = MPI.from_bytes(bs[4:4 + plen], 'big')
+        def readmpi(bs):
+            length = INT.from_bytes(bs[:4], 'big')
+            mpi = MPI.from_bytes(bs[4:4 + length], 'big')
+            return mpi, bs[4 + length:]
 
-        bs = bs[4 + plen:]
-        qlen = INT.from_bytes(bs[:4], 'big')
-        q = MPI.from_bytes(bs[4:4 + qlen], 'big')
+        p, bs = readmpi(bs[2:])
+        q, bs = readmpi(bs)
+        g, bs = readmpi(bs)
+        y, bs = readmpi(bs)
 
-        bs = bs[4 + qlen:]
-        glen = INT.from_bytes(bs[:4], 'big')
-        g = MPI.from_bytes(bs[4:4 + glen], 'big')
-
-        bs = bs[4 + glen:]
-        ylen = INT.from_bytes(bs[:4], 'big')
-        y = MPI.from_bytes(bs[4:4 + ylen], 'big')
-
-        assert len(bs) == 4 + ylen
+        assert len(bs) == 0
 
         return cls(p, q, g, y)
 
@@ -199,27 +193,18 @@ class PrivateDSA(PublicDSA):
         keycode = SHORT.from_bytes(bs[:2], 'big')
         assert keycode == cls.keytype
 
-        bs = bs[2:]
-        plen = INT.from_bytes(bs[:4], 'big')
-        p = MPI.from_bytes(bs[4:4 + plen], 'big')
+        def readmpi(bs):
+            length = INT.from_bytes(bs[:4], 'big')
+            mpi = MPI.from_bytes(bs[4:4 + length], 'big')
+            return mpi, bs[4 + length:]
 
-        bs = bs[4 + plen:]
-        qlen = INT.from_bytes(bs[:4], 'big')
-        q = MPI.from_bytes(bs[4:4 + qlen], 'big')
+        p, bs = readmpi(bs[2:])
+        q, bs = readmpi(bs)
+        g, bs = readmpi(bs)
+        y, bs = readmpi(bs)
+        x, bs = readmpi(bs)
 
-        bs = bs[4 + qlen:]
-        glen = INT.from_bytes(bs[:4], 'big')
-        g = MPI.from_bytes(bs[4:4 + glen], 'big')
-
-        bs = bs[4 + glen:]
-        ylen = INT.from_bytes(bs[:4], 'big')
-        y = MPI.from_bytes(bs[4:4 + ylen], 'big')
-
-        bs = bs[4 + ylen:]
-        xlen = INT.from_bytes(bs[:4], 'big')
-        x = MPI.from_bytes(bs[4:4 + xlen], 'big')
-
-        assert len(bs) == 4 + xlen
+        assert len(bs) == 0
 
         return cls(p, q, g, y, x)
 
