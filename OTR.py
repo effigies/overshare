@@ -27,6 +27,13 @@ class PublicKey:
         return '{:x}'.format(int.from_bytes(sha1(b''.join(
             keypart.bytestring() for keypart in seq)).digest(), 'big'))
 
+    def public(self):
+        """Return public key associated with given key.
+
+        If object is a public key, key == key.public().
+        """
+        return KEYCODES[self.keytype](*self.params)
+
     def bytes(self):
         """A bytestring representation of a public key: the key type code,
         followed by the key parameters."""
@@ -38,13 +45,18 @@ class PublicKey:
 
         The following assertions should hold:
             str(PublicKey.fromBase64(<ASCII>)) == <ASCII>
-            PublicKey.fromBase64(str(<KEYOBJ>)) == <KEYOBJ>
+            PublicKey.fromBase64(str(<KEYOBJ>)) == <KEYOBJ>.public()
+
         """
         return b64encode(self.bytes()).decode()
 
     def __repr__(self):
         """Represent a key as its class name and fingerprint"""
         return '<{} {}>'.format(self.__class__.__name__, self.fingerprint)
+
+    def __eq__(self, comp):
+        """Two public keys are equal iff their parameters are equal"""
+        return self.__class__ == comp.__class__ and self.params == comp.params
 
     @classmethod
     def fromBase64(cls, string):
@@ -144,10 +156,14 @@ class PublicDSA(PublicKey):
 
 class PrivateDSA(PublicDSA):
     """Private DSA keys contain the same information as public keys, but with
-    a secret parameter"""
+    a secret parameter x."""
     def __init__(self, p, q, g, y, x):
         """Construct DSA private key from p, q, g, y and x parameters"""
         self.p, self.q, self.g, self.y, self.x = map(MPI, (p, q, g, y, x))
+
+    def __eq__(self, comp):
+        """Two private keys are equal iff their parameters are equal"""
+        return super(PrivateDSA, self).__eq__(comp) and self.x == comp.x
 
     @classmethod
     def fromSExpression(cls, expr):
@@ -166,5 +182,53 @@ class PrivateDSA(PublicDSA):
         """
         return cls(expr[0]['p'], expr[1]['q'], expr[2]['g'], expr[3]['y'],
                    expr[4]['x'])
+
+    @classmethod
+    def fromBase64(cls, string):
+        """Decode base-64 encoded DSA public key.
+
+        Input should be keycode, followed by MPI representation of p, q, g,
+        y and x.
+
+        MPI representation is a 4-byte length field, followed by the number
+        of bytes in that field.
+
+        All values are big-endian."""
+        bs = b64decode(string.encode())
+
+        keycode = SHORT.from_bytes(bs[:2], 'big')
+        assert keycode == cls.keytype
+
+        bs = bs[2:]
+        plen = INT.from_bytes(bs[:4], 'big')
+        p = MPI.from_bytes(bs[4:4 + plen], 'big')
+
+        bs = bs[4 + plen:]
+        qlen = INT.from_bytes(bs[:4], 'big')
+        q = MPI.from_bytes(bs[4:4 + qlen], 'big')
+
+        bs = bs[4 + qlen:]
+        glen = INT.from_bytes(bs[:4], 'big')
+        g = MPI.from_bytes(bs[4:4 + glen], 'big')
+
+        bs = bs[4 + glen:]
+        ylen = INT.from_bytes(bs[:4], 'big')
+        y = MPI.from_bytes(bs[4:4 + ylen], 'big')
+
+        bs = bs[4 + ylen:]
+        xlen = INT.from_bytes(bs[:4], 'big')
+        x = MPI.from_bytes(bs[4:4 + xlen], 'big')
+
+        assert len(bs) == 4 + xlen
+
+        return cls(p, q, g, y, x)
+
+    def toBase64(self):
+        """Base-64 encoding of PrivateDSA key."""
+        seq = [self.keytype, self.p, self.q, self.g, self.y, self.x]
+
+        return b64encode(b''.join(keypart.bytestring()
+                                  for keypart in seq)).decode()
+
 
 KEYCODES = {SHORT(0x0000): PublicDSA}
