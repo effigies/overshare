@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
+"""Utilities for verifying other secure channels with GPG, or vice versa
+"""
 import gnupg
 
 
 class Signature:
+    """Wrapper for parsing and verifying GnuPG signatures"""
     def __init__(self, message, signature, hashfun, version):
+        """Represent message, signature, hash function and PGP version"""
         self.message = message
         self.signature = signature
         self.hashfun = hashfun
         self.version = version
 
     def __str__(self):
+        """Reconstruct ASCII-armored PGP signature"""
         return """-----BEGIN PGP SIGNED MESSAGE-----
 Hash: {}
 
@@ -23,6 +28,7 @@ Version: {}
 
     @classmethod
     def fromstring(cls, string):
+        """Parse ASCII-armored PGP signature for named access to components"""
         sections = string.split('-----')
         assert sections[0] == ''
         assert sections[1] == 'BEGIN PGP SIGNED MESSAGE'
@@ -40,6 +46,8 @@ Version: {}
         return cls(message[:-1], signature[:-1], hashfun[7:], version[10:])
 
     def verify(self):
+        """Reconstruct and verify signature, and determine if trust threshold
+        is passed"""
         gpg = gnupg.GPG()
         self.ver = gpg.verify(str(self))
         assert self.ver

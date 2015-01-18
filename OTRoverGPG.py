@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""Use GnuPG to verify libpurple (Pidgin/Adium) OTR keys
+
+Sign OTR keys with a PGP key, or verify keys signed with this program
+and add to verified fingerprints list."""
 import sys
 import getopt
 import gnupg
@@ -10,6 +14,8 @@ gpg = gnupg.GPG()
 
 
 def signKey(uid):
+    """Sign each public key associated with a given UID (should be one)
+    and print key and signature to STDOUT."""
     keys = purple.PrivKeys.getPurpleKeys()
     for account in keys.accounts:
         if not account.name.startswith(uid):
@@ -20,6 +26,8 @@ def signKey(uid):
 
 
 def verifyKey(uid):
+    """Verify a signature on a public key and attempt to verify an existing
+    fingerprint entry."""
     sig = Signature.fromstring(sys.stdin.read())
 
     assert sig.verify()
@@ -42,6 +50,7 @@ def verifyKey(uid):
 
 
 def main(cmd, *argv):
+    """Interpret commandline options and sign or verify a public key."""
     try:
         opts, args = getopt.getopt(argv, "svi:", ["sign", "verify", "id="])
     except getopt.GetoptError as err:
