@@ -44,7 +44,8 @@ Import:
 Signing TextSecure keys with GPG
 --------------------------------
 TextSecure currently validates keys with QR codes. From the main menu, you may
-find your key under the option "My identity key". There you will see a key like
+find your key under the option "My identity key". There you will see a key
+fingerprint like
 
     01 23 45 67 89 ab
     cd ef 02 13 46 57
@@ -54,15 +55,15 @@ find your key under the option "My identity key". There you will see a key like
     6e 7f ff
 
 A barcode symbol gives you the option to "Get scanned to compare". There is a
-QR code containing the base-64 version of your key, with the encoded text
-beneath, for example:
+QR code containing the base-64 version of your fingerprint, with the encoded
+text beneath, for example:
 
     ASNFZ4mrze8CE0ZXipvO3wQVJjeMna6/CBkqO0xdbn//
 
-You may use either form of the key as the the argument to
-`signTextSecure.py`, which will produce a block that includes QR, hex and
-base-64 versions of the fingerprint. This block may be emailed or posted
-online. The block may be copied into the terminal following
+`signTextSecure.py` takes as an argument either form of the fingerprint or the
+path to an image containing the QR code. The program will produce a block that
+includes QR, hex and base-64 versions of the fingerprint. This block may be
+emailed or posted online. The block may be copied into the terminal following
 
     gpg --verify
 
