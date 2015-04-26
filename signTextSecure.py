@@ -8,8 +8,9 @@
 # the base-64 encoded fingerprint in plain text
 #
 # Dependencies: qrencode, GnuPG
+# Optional dependency: zbar (for reading QR images)
 #
-# 2014 Christopher J Johnson
+# 2014 Christopher J Markiewicz
 import sys
 import base64
 import subprocess
@@ -35,11 +36,19 @@ def getQR(fingerprint):
     return '\n'.join(split)
 
 
+def readQR(fname):
+    return subprocess.check_output(["zbarimg", "-q", "--raw",
+                                    fname]).decode().rstrip()
+
+
 def main(cmd, fingerprint):
+    if fingerprint.endswith('.png'):
+        fingerprint = readQR(fingerprint)
+
     try:
         bytestring = int(fingerprint, 16).to_bytes(33, 'big')
         fingerprint = base64.b64encode(bytestring).decode()
-    except ValueError as e:
+    except ValueError:
         bytestring = base64.b64decode(fingerprint)
 
     lines = [getQR(fingerprint), '']
@@ -47,10 +56,7 @@ def main(cmd, fingerprint):
     for six in splitsixes(bytestring):
         lines.append(front + ' '.join('{:02x}'.format(x) for x in six))
         front = '             '
-    lines.append('')
-    lines.append('Base 64 encoded: ' + fingerprint)
-    lines.append('')
-    lines.append('')
+    lines.extend(['', 'Base 64 encoded: ' + fingerprint, '', ''])
 
     sig = gpg.sign('\n'.join(lines))
     assert sig
