@@ -19,8 +19,7 @@ class Signature:
 Hash: {}
 
 {}
------BEGIN PGP SIGNATURE-----
-Version: {}
+-----BEGIN PGP SIGNATURE-----{}
 
 {}
 -----END PGP SIGNATURE-----""".format(self.hashfun, self.message, self.version,
@@ -40,10 +39,10 @@ Version: {}
         assert message[-1] == '\n'
 
         version, signature = sections[4].split('\n\n', 1)
-        assert version.startswith('\nVersion: ')
+        assert version.startswith('\nVersion: ') or version == ''
         assert signature[-1] == '\n'
 
-        return cls(message[:-1], signature[:-1], hashfun[7:], version[10:])
+        return cls(message[:-1], signature[:-1], hashfun[7:], version)
 
     def verify(self):
         """Reconstruct and verify signature, and determine if trust threshold
