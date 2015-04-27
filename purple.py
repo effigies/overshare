@@ -4,7 +4,7 @@ import os
 import csv
 import shutil
 from sexpParser import sexp, sexptodict
-from OTR import PrivateDSA
+from potr.compatcrypto.pycrypto import DSAKey
 
 
 class Account:
@@ -14,13 +14,13 @@ class Account:
         private key"""
         self.name = name
         self.protocol = protocol
-        self.private_key = private_key
+        self.key = private_key
 
     def __repr__(self):
         """Represent an account with the class name, username, and public key
         fingerprint."""
         return '<{} {} {}>'.format(self.__class__.__name__,
-                                   self.name, self.private_key.fingerprint)
+                                   self.name, self.key.fingerprint())
 
     @classmethod
     def fromSExpression(cls, expr):
@@ -45,16 +45,21 @@ class Account:
         """
         name = expr[0]['name']
         protocol = expr[1]['protocol']
-        private_key = PrivateDSA.fromSExpression(expr[2]['private-key']['dsa'])
+        subexpr = expr[2]['private-key']['dsa']
+        private_key = DSAKey((subexpr[3]['y'], subexpr[2]['g'],
+                              subexpr[0]['p'], subexpr[1]['q'],
+                              subexpr[4]['x']), private=True)
         return cls(name, protocol, private_key)
 
 
-class PrivKeys:
+class PrivKeys(list):
     """Representation of a libpurple privkeys data structure, which is a
     list of account structures, in turn represented by Account."""
     def __init__(self, accounts):
         """Build a PrivKeys object containing a list of Account objects"""
-        self.accounts = accounts
+        super(PrivKeys, self).__init__(accounts)
+
+        assert all(isinstance(acct, Account) for acct in self)
 
     @classmethod
     def fromSExpression(cls, expr):
@@ -77,9 +82,8 @@ class PrivKeys:
 
         This method accepts a parsed S-expression as shown.
         """
-        accounts = [Account.fromSExpression(sub['account'])
-                    for sub in expr['privkeys']]
-        return cls(accounts)
+        return cls(Account.fromSExpression(sub['account'])
+                   for sub in expr['privkeys'])
 
     @classmethod
     def getPurpleKeys(cls):
@@ -122,9 +126,9 @@ class FingerprintEntry:
             return '<FPR {} {}>'.format(self.uid, self.fpr)
 
 
-class FingerprintTable(dict):
-    """Represent the ~/.purple/otr.fingerprints file as a dictionary of
-    (username, FingerprintEntry pairs)."""
+class FingerprintTable(list):
+    """Represent the ~/.purple/otr.fingerprints file as a list of
+    FingerprintEntrys."""
     fpr_file = os.path.join(os.environ['HOME'], '.purple',
                             'otr.fingerprints')
 
@@ -133,7 +137,7 @@ class FingerprintTable(dict):
         """Read fingerprint file"""
         with open(cls.fpr_file) as f:
             tsv = csv.reader(f, delimiter='\t')
-            entries = [(line[0], FingerprintEntry(*line)) for line in tsv]
+            entries = [FingerprintEntry(*line) for line in tsv]
 
         return cls(entries)
 
@@ -143,5 +147,5 @@ class FingerprintTable(dict):
             shutil.copy(self.fpr_file, self.fpr_file + '.bak')
 
         with open(self.fpr_file, 'w') as f:
-            for uid in self:
-                print(self[uid], file=f)
+            for entry in self:
+                f.write('{!s}\n'.format(entry))
