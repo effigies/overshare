@@ -41,9 +41,9 @@ Import:
     gpg --import
 
 
-Signing TextSecure keys with GPG
+Signing Signal keys with GPG
 --------------------------------
-TextSecure currently validates keys with QR codes. From the main menu, you may
+Signal currently validates keys with QR codes. From the main menu, you may
 find your key under the option "My identity key". There you will see a key
 fingerprint like
 
@@ -60,15 +60,14 @@ text beneath, for example:
 
     ASNFZ4mrze8CE0ZXipvO3wQVJjeMna6/CBkqO0xdbn//
 
-`signTextSecure.py` takes as an argument either form of the fingerprint or the
+`signSignal.py` takes as an argument either form of the fingerprint or the
 path to an image containing the QR code. The program will produce a block that
 includes QR, hex and base-64 versions of the fingerprint. This block may be
 emailed or posted online. The block may be copied into the terminal following
 
     gpg --verify
 
-after which the user may scan the QR code to verify your identity in
-TextSecure.
+after which the user may scan the QR code to verify your identity in Signal.
 
 Note that, to display the QR code properly in a web browser, the `<pre>` or
 `<textarea>` tag will need to have the `line-height` property set to `1em`.
